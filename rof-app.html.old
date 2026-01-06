@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROF | Report of Findings</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Blue/White/Transparent Palette */
+            --color-bg: #F8FAFC;
+            --color-surface: rgba(255, 255, 255, 0.75);
+            --color-surface-elevated: rgba(255, 255, 255, 0.9);
+            --color-surface-hover: rgba(255, 255, 255, 0.95);
+            --color-border: rgba(59, 130, 246, 0.12);
+            --color-border-subtle: rgba(59, 130, 246, 0.06);
+            --color-border-strong: rgba(59, 130, 246, 0.2);
+            
+            --color-text-primary: #0F172A;
+            --color-text-secondary: #475569;
+            --color-text-tertiary: #94A3B8;
+            
+            --color-accent: #3B82F6;
+            --color-accent-dark: #1D4ED8;
+            --color-accent-soft: rgba(59, 130, 246, 0.1);
+            --color-accent-glow: rgba(59, 130, 246, 0.25);
+            
+            --color-success: #10B981;
+            --color-success-soft: rgba(16, 185, 129, 0.1);
+            --color-error: #EF4444;
+            --color-error-soft: rgba(239, 68, 68, 0.1);
+            
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            
+            --shadow-soft: 0 4px 20px rgba(59, 130, 246, 0.08);
+            --shadow-glow: 0 8px 40px rgba(59, 130, 246, 0.15);
+            --shadow-elevated: 0 20px 60px rgba(59, 130, 246, 0.12);
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background - Blue Gradient Orbs */
+        .ambient-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse 80% 60% at 10% 10%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 80% at 90% 90%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 50% at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+            animation: ambientShift 25s ease-in-out infinite;
+        }
+
+        @keyframes ambientShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(2%, 2%) scale(1.02); }
+            66% { transform: translate(-1%, 1%) scale(0.98); }
+        }
+
+        /* Main Container */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Logo/Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+
+        .logo-mark {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+        }
+
+        .logo-mark::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: var(--color-surface-elevated);
+            border-radius: 9px;
+        }
+
+        .logo-mark svg {
+            position: relative;
+            z-index: 1;
+            color: var(--color-accent);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--color-accent-dark) 0%, var(--color-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        /* Card Base */
+        .glass-card {
+            background: var(--color-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            transition: all var(--transition-smooth);
+        }
+
+        .glass-card:hover {
+            box-shadow: var(--shadow-elevated);
+        }
+
+        /* Main Content Container */
+        .main-container {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        /* Start Card */
+        .start-card {
+            padding: 48px 40px;
+            text-align: center;
+        }
+
+        .start-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 28px;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .start-icon svg {
+            color: white;
+        }
+
+        .start-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .start-subtitle {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 28px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 20px var(--color-accent-glow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--color-accent-glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--color-surface-elevated);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border-strong);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-surface-hover);
+            color: var(--color-text-primary);
+            border-color: var(--color-accent);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Progress Indicator */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 32px;
+            padding: 0 20px;
+        }
+
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--color-border-strong);
+            transition: all var(--transition-smooth);
+        }
+
+        .progress-dot.active {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+            transform: scale(1.3);
+            box-shadow: 0 0 0 4px var(--color-accent-soft);
+        }
+
+        .progress-dot.completed {
+            background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+        }
+
+        .progress-line {
+            width: 24px;
+            height: 3px;
+            background: var(--color-border-strong);
+            border-radius: 100px;
+            transition: all var(--transition-smooth);
+        }
+
+        .progress-line.active {
+            background: linear-gradient(90deg, var(--color-success) 0%, var(--color-accent) 100%);
+        }
+
+        /* Step Card */
+        .step-card {
+            padding: 40px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: all var(--transition-smooth);
+        }
+
+        .step-card.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .step-card.hidden {
+            display: none;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .step-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            background: var(--color-accent-soft);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-accent);
+        }
+
+        .step-title {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 6px;
+        }
+
+        .step-subtitle {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* Option Cards Grid */
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .options-grid.cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .options-grid.cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .option-card {
+            padding: 16px;
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .option-card:hover {
+            border-color: var(--color-accent);
+            background: var(--color-surface-hover);
+            transform: translateY(-2px);
+        }
+
+        .option-card.selected {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+            border-color: transparent;
+            color: white;
+            transform: scale(1.02);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .option-card.selected svg {
+            color: white;
+        }
+
+        .option-card svg {
+            color: var(--color-text-tertiary);
+            margin-bottom: 8px;
+            transition: color var(--transition-fast);
+        }
+
+        .option-card span {
+            display: block;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Medication Chips */
+        .medication-chip {
+            padding: 12px 8px;
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        .medication-chip:hover {
+            border-color: var(--color-accent);
+        }
+
+        .medication-chip.selected {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+            border-color: transparent;
+            color: white;
+        }
+
+        .none-option {
+            grid-column: 1 / -1;
+        }
+
+        /* Text Input */
+        .text-input {
+            width: 100%;
+            padding: 16px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--color-text-primary);
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all var(--transition-fast);
+        }
+
+        .text-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .text-input:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 4px var(--color-accent-soft);
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            padding: 32px 20px;
+            background: var(--color-surface-elevated);
+            border: 2px dashed var(--color-border-strong);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--color-accent);
+            background: var(--color-accent-soft);
+        }
+
+        .upload-zone.has-file {
+            border-color: var(--color-accent);
+            border-style: solid;
+            background: var(--color-accent-soft);
+        }
+
+        .upload-zone svg {
+            color: var(--color-accent);
+            margin-bottom: 12px;
+        }
+
+        .upload-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* Button Group */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* Hidden Sections */
+        .hidden-section {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .hidden-section.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .hidden-section label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===================================
+           JOB STATUS - IMPROVED UX
+           Single updating card + timeline
+        =================================== */
+        .job-status-container {
+            padding: 40px;
+        }
+
+        .job-status-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .job-status-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 6px;
+        }
+
+        .job-status-subtitle {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* Current Status Card - The Main Focus */
+        .current-status-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all var(--transition-smooth);
+        }
+
+        .current-status-card.processing {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 4px var(--color-accent-soft);
+        }
+
+        .current-status-card.complete {
+            border-color: var(--color-success);
+            box-shadow: 0 0 0 4px var(--color-success-soft);
+        }
+
+        .current-status-card.error {
+            border-color: var(--color-error);
+            box-shadow: 0 0 0 4px var(--color-error-soft);
+        }
+
+        .status-icon-container {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .status-icon-container.processing {
+            background: var(--color-accent-soft);
+            color: var(--color-accent);
+        }
+
+        .status-icon-container.complete {
+            background: var(--color-success-soft);
+            color: var(--color-success);
+        }
+
+        .status-icon-container.error {
+            background: var(--color-error-soft);
+            color: var(--color-error);
+        }
+
+        /* Spinner Animation */
+        .spinner-ring {
+            position: absolute;
+            inset: 0;
+            border: 3px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .status-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 4px;
+        }
+
+        .status-message {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            flex-shrink: 0;
+        }
+
+        .status-badge.processing {
+            background: var(--color-accent-soft);
+            color: var(--color-accent);
+        }
+
+        .status-badge.complete {
+            background: var(--color-success-soft);
+            color: var(--color-success);
+        }
+
+        .status-badge.error {
+            background: var(--color-error-soft);
+            color: var(--color-error);
+        }
+
+        /* Timeline - Compact Horizontal */
+        .timeline-container {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .timeline-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-count {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+        }
+
+        .timeline-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--color-surface);
+            border-radius: 100px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            transition: all var(--transition-fast);
+        }
+
+        .timeline-step.complete {
+            background: var(--color-success-soft);
+            color: var(--color-success);
+        }
+
+        .timeline-step-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Empty Timeline State */
+        .timeline-empty {
+            text-align: center;
+            padding: 12px;
+            color: var(--color-text-tertiary);
+            font-size: 13px;
+        }
+
+        /* Job Details Summary */
+        .job-details {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .job-details-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .job-details-title svg {
+            color: var(--color-success);
+        }
+
+        .job-details-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .job-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .job-detail-row:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .job-detail-label {
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+        }
+
+        .job-detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 540px) {
+            .app-container {
+                padding: 24px 16px;
+            }
+            
+            .step-card, .start-card, .job-status-container {
+                padding: 28px 24px;
+            }
+            
+            .options-grid.cols-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .options-grid.cols-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .current-status-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .timeline-steps {
+                justify-content: center;
+            }
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-gradient"></div>
+    
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo-mark">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">ROF</span>
+            </div>
+            <p class="logo-subtitle">Report of Findings</p>
+        </header>
+
+        <!-- Main Container -->
+        <div id="main-container" class="main-container">
+            
+            <!-- Start Card -->
+            <div id="start-card" class="glass-card start-card">
+                <div class="start-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <h2 class="start-title">New Job</h2>
+                <p class="start-subtitle">Start a new patient analysis workflow</p>
+                <button id="start-btn" class="btn btn-primary btn-full">Begin Assessment</button>
+            </div>
+            
+            <!-- Onboarding Steps Container -->
+            <div id="onboarding-container" class="hidden">
+                <!-- Progress Bar -->
+                <div class="progress-bar">
+                    <div class="progress-dot" data-step="1"></div>
+                    <div class="progress-line"></div>
+                    <div class="progress-dot" data-step="2"></div>
+                    <div class="progress-line"></div>
+                    <div class="progress-dot" data-step="3"></div>
+                    <div class="progress-line"></div>
+                    <div class="progress-dot" data-step="4"></div>
+                    <div class="progress-line"></div>
+                    <div class="progress-dot" data-step="5"></div>
+                    <div class="progress-line"></div>
+                    <div class="progress-dot" data-step="6"></div>
+                </div>
+                
+                <!-- Step 1: Director -->
+                <div id="step-1" class="glass-card step-card">
+                    <div class="step-header">
+                        <div class="step-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Director of Admissions</h3>
+                        <p class="step-subtitle">Select the attending director</p>
+                    </div>
+                    <div class="options-grid cols-2">
+                        <div class="option-card" data-value="Cora"><span>Cora</span></div>
+                        <div class="option-card" data-value="Dr Jake"><span>Dr. Jake</span></div>
+                        <div class="option-card" data-value="Dr Strang"><span>Dr. Strang</span></div>
+                        <div class="option-card" data-value="Wayne"><span>Wayne</span></div>
+                        <div class="option-card" data-value="Dr Dan"><span>Dr. Dan</span></div>
+                        <div class="option-card" data-value="Christopher"><span>Christopher</span></div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary next-btn" disabled>Continue</button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Patient Name -->
+                <div id="step-2" class="glass-card step-card hidden">
+                    <div class="step-header">
+                        <div class="step-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Patient Information</h3>
+                        <p class="step-subtitle">Enter the patient's preferred name</p>
+                    </div>
+                    <input id="patient-name" type="text" class="text-input" placeholder="Enter preferred name" />
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn">Back</button>
+                        <button class="btn btn-primary next-btn" disabled>Continue</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Family Present -->
+                <div id="step-3" class="glass-card step-card hidden">
+                    <div class="step-header">
+                        <div class="step-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Family Present?</h3>
+                        <p class="step-subtitle">Is the patient's family present?</p>
+                    </div>
+                    <div class="options-grid cols-2">
+                        <div class="option-card" data-value="No">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span>No</span>
+                        </div>
+                        <div class="option-card" data-value="FamilyPresent">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>Yes</span>
+                        </div>
+                    </div>
+                    <div id="family-name-section" class="hidden-section">
+                        <label>Family Member's Name</label>
+                        <input id="family-name" type="text" class="text-input" placeholder="Enter family member's name" />
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn">Back</button>
+                        <button class="btn btn-primary next-btn" disabled>Continue</button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Insulin Dependent -->
+                <div id="step-4" class="glass-card step-card hidden">
+                    <div class="step-header">
+                        <div class="step-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Insulin Dependent?</h3>
+                        <p class="step-subtitle">Is the patient insulin dependent?</p>
+                    </div>
+                    <div class="options-grid cols-2">
+                        <div class="option-card" data-value="yes">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Yes</span>
+                        </div>
+                        <div class="option-card" data-value="no">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>No</span>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn">Back</button>
+                        <button class="btn btn-primary next-btn" disabled>Continue</button>
+                    </div>
+                </div>
+                
+                <!-- Step 5: Medications -->
+                <div id="step-5" class="glass-card step-card hidden">
+                    <div class="step-header">
+                        <div class="step-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Current Medications</h3>
+                        <p class="step-subtitle">Select all medications the patient is taking</p>
+                    </div>
+                    <div class="options-grid cols-3" style="margin-bottom: 12px;">
+                        <div class="medication-chip" data-value="Metforming">Metformin</div>
+                        <div class="medication-chip" data-value="Glipizide">Glipizide</div>
+                        <div class="medication-chip" data-value="Repatha">Repatha</div>
+                        <div class="medication-chip" data-value="Glimepiride">Glimepiride</div>
+                        <div class="medication-chip" data-value="Glyburide">Glyburide</div>
+                        <div class="medication-chip" data-value="Jardiance">Jardiance</div>
+                        <div class="medication-chip" data-value="Trulicity">Trulicity</div>
+                        <div class="medication-chip" data-value="Mounjaro">Mounjaro</div>
+                        <div class="medication-chip" data-value="Ozempic">Ozempic</div>
+                    </div>
+                    <div class="medication-chip none-option" data-value="None">None of the above</div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn">Back</button>
+                        <button class="btn btn-primary next-btn" disabled>Continue</button>
+                    </div>
+                </div>
+                
+                <!-- Step 6: File Uploads -->
+                <div id="step-6" class="glass-card step-card hidden">
+                    <div class="step-header">
+                        <div class="step-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Upload Lab Results</h3>
+                        <p class="step-subtitle">Upload the patient's lab documents</p>
+                    </div>
+                    <div class="options-grid cols-2">
+                        <label>
+                            <div id="upload-glucose" class="upload-zone">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span id="glucose-label" class="upload-label">Blood Test</span>
+                                <span class="upload-hint">PDF only</span>
+                            </div>
+                            <input id="glucose-file" type="file" accept="application/pdf" class="hidden" />
+                        </label>
+                        <label>
+                            <div id="upload-enzyme" class="upload-zone">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span id="enzyme-label" class="upload-label">Enzymes</span>
+                                <span class="upload-hint">PDF only</span>
+                            </div>
+                            <input id="enzyme-file" type="file" accept="application/pdf" class="hidden" />
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn">Back</button>
+                        <button id="submit-btn" class="btn btn-primary" disabled>Submit for Analysis</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Job Status Container - IMPROVED UX -->
+            <div id="job-status-container" class="glass-card job-status-container hidden">
+                <div class="job-status-header">
+                    <h2 class="job-status-title">Job Progress</h2>
+                    <p class="job-status-subtitle">Tracking analysis workflow</p>
+                </div>
+                
+                <!-- Current Status Card - Updates in place -->
+                <div id="current-status-card" class="current-status-card processing">
+                    <div id="status-icon" class="status-icon-container processing">
+                        <div class="spinner-ring"></div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="status-content">
+                        <div id="status-title" class="status-title">Patient Details Ingested</div>
+                        <div id="status-message" class="status-message">Starting workflow...</div>
+                    </div>
+                    <div id="status-badge" class="status-badge processing">Processing</div>
+                </div>
+                
+                <!-- Timeline - Compact horizontal chips -->
+                <div class="timeline-container">
+                    <div class="timeline-header">
+                        <span class="timeline-label">Completed Steps</span>
+                        <span id="timeline-count" class="timeline-count">0 steps</span>
+                    </div>
+                    <div id="timeline-steps" class="timeline-steps">
+                        <div class="timeline-empty">No steps completed yet</div>
+                    </div>
+                </div>
+                
+                <!-- Job Details (shown on completion) -->
+                <div id="job-details" class="job-details hidden">
+                    <div class="job-details-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Job Summary
+                    </div>
+                    <div id="job-details-grid" class="job-details-grid"></div>
+                </div>
+                
+                <!-- New Job Button -->
+                <button id="new-job-btn" class="btn btn-primary btn-full hidden">Start New Job</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const N8N_WEBHOOK = "http://localhost:5678/webhook-test/2f2dadaf-dd24-4713-bb2c-48b1354a8d35";
+        const STATUS_SERVER = 'http://localhost:3005';
+        
+        // State
+        let currentStep = 1;
+        let formData = {
+            director: null,
+            preferredName: '',
+            marriageStatus: null,
+            partnerName: '',
+            insulinStatus: null,
+            medicationStatus: null,
+            medications: [],
+            glucoseFile: null,
+            enzymeFile: null
+        };
+        
+        // Job status state
+        let eventSource = null;
+        let currentJobId = null;
+        let completedSteps = [];
+        
+        // DOM Elements
+        const startCard = document.getElementById('start-card');
+        const startBtn = document.getElementById('start-btn');
+        const onboardingContainer = document.getElementById('onboarding-container');
+        const jobStatusContainer = document.getElementById('job-status-container');
+        const newJobBtn = document.getElementById('new-job-btn');
+        
+        // Progress elements
+        const progressDots = document.querySelectorAll('.progress-dot');
+        const progressLines = document.querySelectorAll('.progress-line');
+        
+        // Status elements
+        const currentStatusCard = document.getElementById('current-status-card');
+        const statusIcon = document.getElementById('status-icon');
+        const statusTitle = document.getElementById('status-title');
+        const statusMessage = document.getElementById('status-message');
+        const statusBadge = document.getElementById('status-badge');
+        const timelineSteps = document.getElementById('timeline-steps');
+        const timelineCount = document.getElementById('timeline-count');
+        const jobDetails = document.getElementById('job-details');
+        const jobDetailsGrid = document.getElementById('job-details-grid');
+        
+        // Start Flow
+        startBtn.addEventListener('click', () => {
+            startCard.style.opacity = '0';
+            startCard.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                startCard.classList.add('hidden');
+                onboardingContainer.classList.remove('hidden');
+                showStep(1);
+            }, 300);
+        });
+        
+        // Show Step
+        function showStep(step) {
+            currentStep = step;
+            updateProgress();
+            
+            document.querySelectorAll('.step-card').forEach(card => {
+                card.classList.remove('active');
+                card.classList.add('hidden');
+            });
+            
+            const currentCard = document.getElementById(`step-${step}`);
+            currentCard.classList.remove('hidden');
+            setTimeout(() => currentCard.classList.add('active'), 50);
+        }
+        
+        // Update Progress
+        function updateProgress() {
+            progressDots.forEach((dot, index) => {
+                const stepNum = index + 1;
+                dot.classList.remove('active', 'completed');
+                if (stepNum < currentStep) {
+                    dot.classList.add('completed');
+                } else if (stepNum === currentStep) {
+                    dot.classList.add('active');
+                }
+            });
+            
+            progressLines.forEach((line, index) => {
+                if (index < currentStep - 1) {
+                    line.classList.add('active');
+                } else {
+                    line.classList.remove('active');
+                }
+            });
+        }
+        
+        // Step 1: Director Selection
+        document.querySelectorAll('#step-1 .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#step-1 .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                formData.director = card.dataset.value;
+                document.querySelector('#step-1 .next-btn').disabled = false;
+            });
+        });
+        
+        // Step 2: Patient Name
+        const patientNameInput = document.getElementById('patient-name');
+        patientNameInput.addEventListener('input', () => {
+            formData.preferredName = patientNameInput.value.trim();
+            document.querySelector('#step-2 .next-btn').disabled = formData.preferredName.length === 0;
+        });
+        
+        // Step 3: Family Present
+        const familyNameSection = document.getElementById('family-name-section');
+        const familyNameInput = document.getElementById('family-name');
+        
+        document.querySelectorAll('#step-3 .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#step-3 .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                formData.marriageStatus = card.dataset.value;
+                
+                if (formData.marriageStatus === 'FamilyPresent') {
+                    familyNameSection.classList.add('visible');
+                    document.querySelector('#step-3 .next-btn').disabled = familyNameInput.value.trim().length === 0;
+                } else {
+                    familyNameSection.classList.remove('visible');
+                    formData.partnerName = '';
+                    document.querySelector('#step-3 .next-btn').disabled = false;
+                }
+            });
+        });
+        
+        familyNameInput.addEventListener('input', () => {
+            formData.partnerName = familyNameInput.value.trim();
+            if (formData.marriageStatus === 'FamilyPresent') {
+                document.querySelector('#step-3 .next-btn').disabled = formData.partnerName.length === 0;
+            }
+        });
+        
+        // Step 4: Insulin Dependent
+        document.querySelectorAll('#step-4 .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#step-4 .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                formData.insulinStatus = card.dataset.value;
+                document.querySelector('#step-4 .next-btn').disabled = false;
+            });
+        });
+        
+        // Step 5: Medications
+        const medicationChips = document.querySelectorAll('#step-5 .medication-chip:not(.none-option)');
+        const noneOption = document.querySelector('#step-5 .none-option');
+        
+        medicationChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.classList.toggle('selected');
+                noneOption.classList.remove('selected');
+                updateMedications();
+            });
+        });
+        
+        noneOption.addEventListener('click', () => {
+            medicationChips.forEach(c => c.classList.remove('selected'));
+            noneOption.classList.toggle('selected');
+            updateMedications();
+        });
+        
+        function updateMedications() {
+            if (noneOption.classList.contains('selected')) {
+                formData.medicationStatus = 'no';
+                formData.medications = [];
+            } else {
+                const selected = Array.from(document.querySelectorAll('#step-5 .medication-chip.selected:not(.none-option)'));
+                formData.medications = selected.map(c => c.dataset.value);
+                formData.medicationStatus = formData.medications.length > 0 ? 'yes' : null;
+            }
+            const hasSelection = noneOption.classList.contains('selected') || formData.medications.length > 0;
+            document.querySelector('#step-5 .next-btn').disabled = !hasSelection;
+        }
+        
+        // Step 6: File Uploads
+        const glucoseFileInput = document.getElementById('glucose-file');
+        const enzymeFileInput = document.getElementById('enzyme-file');
+        const glucoseLabel = document.getElementById('glucose-label');
+        const enzymeLabel = document.getElementById('enzyme-label');
+        const uploadGlucose = document.getElementById('upload-glucose');
+        const uploadEnzyme = document.getElementById('upload-enzyme');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        glucoseFileInput.addEventListener('change', () => {
+            const file = glucoseFileInput.files[0];
+            if (file && file.type === 'application/pdf') {
+                formData.glucoseFile = file;
+                glucoseLabel.textContent = `✓ ${file.name}`;
+                uploadGlucose.classList.add('has-file');
+            } else {
+                formData.glucoseFile = null;
+                glucoseLabel.textContent = 'Blood Test';
+                uploadGlucose.classList.remove('has-file');
+            }
+            validateStep6();
+        });
+        
+        enzymeFileInput.addEventListener('change', () => {
+            const file = enzymeFileInput.files[0];
+            if (file && file.type === 'application/pdf') {
+                formData.enzymeFile = file;
+                enzymeLabel.textContent = `✓ ${file.name}`;
+                uploadEnzyme.classList.add('has-file');
+            } else {
+                formData.enzymeFile = null;
+                enzymeLabel.textContent = 'Enzymes';
+                uploadEnzyme.classList.remove('has-file');
+            }
+            validateStep6();
+        });
+        
+        function validateStep6() {
+            submitBtn.disabled = !(formData.glucoseFile && formData.enzymeFile);
+        }
+        
+        // Navigation Buttons
+        document.querySelectorAll('.next-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (currentStep < 6) {
+                    showStep(currentStep + 1);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.back-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    showStep(currentStep - 1);
+                }
+            });
+        });
+        
+        // Generate unique job ID
+        function generateJobId() {
+            return 'job_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // Submit
+        submitBtn.addEventListener('click', async () => {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const jobId = generateJobId();
+            
+            try {
+                const payload = new FormData();
+                payload.append('jobId', jobId);
+                payload.append('glucoseFile', formData.glucoseFile);
+                payload.append('enzymeFile', formData.enzymeFile);
+                payload.append('file', formData.glucoseFile);
+                payload.append('preferredName', formData.preferredName);
+                payload.append('director', formData.director);
+                payload.append('marriageStatus', formData.marriageStatus);
+                if (formData.marriageStatus === 'FamilyPresent') {
+                    payload.append('partnerName', formData.partnerName);
+                }
+                payload.append('insulinStatus', formData.insulinStatus);
+                payload.append('medicationStatus', formData.medicationStatus);
+                if (formData.medicationStatus === 'yes' && formData.medications.length > 0) {
+                    payload.append('medicationsJson', JSON.stringify(formData.medications));
+                }
+                
+                const response = await fetch(N8N_WEBHOOK, {
+                    method: 'POST',
+                    body: payload
+                });
+                
+                if (!response.ok) throw new Error('Submission failed');
+                
+                // Show job status
+                showJobStatus(jobId);
+                connectToStatusUpdates(jobId);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit for Analysis';
+                alert('Submission failed. Please try again.');
+            }
+        });
+        
+        // Show Job Status
+        function showJobStatus(jobId) {
+            onboardingContainer.classList.add('hidden');
+            jobStatusContainer.classList.remove('hidden');
+            
+            // Reset state
+            completedSteps = [];
+            updateTimeline();
+            
+            // Set initial status
+            updateCurrentStatus('processing', 'Patient Details Ingested', `Job ID: ${jobId.slice(0, 12)}...`);
+        }
+        
+        // Update Current Status Card (in place, no new cards)
+        function updateCurrentStatus(status, title, subtitle) {
+            // Update card styling
+            currentStatusCard.className = `current-status-card ${status}`;
+            statusIcon.className = `status-icon-container ${status}`;
+            statusBadge.className = `status-badge ${status}`;
+            
+            // Update content
+            statusTitle.textContent = title;
+            statusMessage.textContent = subtitle;
+            
+            // Update badge text
+            const badgeText = {
+                'processing': 'Processing',
+                'complete': 'Complete',
+                'error': 'Error'
+            };
+            statusBadge.textContent = badgeText[status] || 'Processing';
+            
+            // Update icon
+            const spinner = statusIcon.querySelector('.spinner-ring');
+            if (status === 'complete') {
+                spinner.style.display = 'none';
+                statusIcon.querySelector('svg').innerHTML = '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+            } else if (status === 'error') {
+                spinner.style.display = 'none';
+                statusIcon.querySelector('svg').innerHTML = '<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>';
+            } else {
+                spinner.style.display = 'block';
+                statusIcon.querySelector('svg').innerHTML = '<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>';
+            }
+            
+            // Show new job button on completion
+            if (status === 'complete') {
+                newJobBtn.classList.remove('hidden');
+            }
+        }
+        
+        // Add to Timeline (compact chips)
+        function addToTimeline(title) {
+            completedSteps.push(title);
+            updateTimeline();
+        }
+        
+        function updateTimeline() {
+            if (completedSteps.length === 0) {
+                timelineSteps.innerHTML = '<div class="timeline-empty">No steps completed yet</div>';
+                timelineCount.textContent = '0 steps';
+            } else {
+                timelineSteps.innerHTML = completedSteps.map(step => `
+                    <div class="timeline-step complete">
+                        <div class="timeline-step-dot"></div>
+                        <span>${step}</span>
+                    </div>
+                `).join('');
+                timelineCount.textContent = `${completedSteps.length} step${completedSteps.length !== 1 ? 's' : ''}`;
+            }
+        }
+        
+        // Show Job Details
+        function showJobDetails(details) {
+            if (!details || Object.keys(details).length === 0) return;
+            
+            jobDetailsGrid.innerHTML = Object.entries(details).map(([key, value]) => {
+                const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return `
+                    <div class="job-detail-row">
+                        <span class="job-detail-label">${formattedKey}</span>
+                        <span class="job-detail-value">${value}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            jobDetails.classList.remove('hidden');
+        }
+        
+        // Connect to SSE
+        function connectToStatusUpdates(jobId) {
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            currentJobId = jobId;
+            eventSource = new EventSource(`${STATUS_SERVER}/events?jobId=${jobId}`);
+            
+            eventSource.onopen = () => {
+                console.log('Connected to status updates for job:', jobId);
+            };
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('Status update received:', data);
+                    
+                    if (data.jobId && data.jobId !== currentJobId) {
+                        return;
+                    }
+                    
+                    if (data.type === 'status_update') {
+                        // Add previous status to timeline before updating
+                        const prevTitle = statusTitle.textContent;
+                        if (prevTitle && prevTitle !== 'Patient Details Ingested') {
+                            addToTimeline(prevTitle);
+                        } else if (prevTitle === 'Patient Details Ingested') {
+                            addToTimeline('Ingested');
+                        }
+                        
+                        // Update current status
+                        updateCurrentStatus(
+                            data.status === 'complete' ? 'complete' : 'processing',
+                            data.title,
+                            data.subtitle
+                        );
+                    } else if (data.type === 'job_complete') {
+                        // Add final step to timeline
+                        const prevTitle = statusTitle.textContent;
+                        if (prevTitle) {
+                            addToTimeline(prevTitle);
+                        }
+                        
+                        // Update to complete status
+                        updateCurrentStatus('complete', data.title, data.subtitle);
+                        
+                        // Show details if provided
+                        if (data.details) {
+                            showJobDetails(data.details);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing status update:', error);
+                }
+            };
+            
+            eventSource.onerror = (error) => {
+                console.error('SSE connection error:', error);
+                setTimeout(() => connectToStatusUpdates(jobId), 5000);
+            };
+        }
+        
+        // Disconnect SSE
+        function disconnectStatusUpdates() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            currentJobId = null;
+            completedSteps = [];
+        }
+        
+        // New Job
+        newJobBtn.addEventListener('click', () => {
+            disconnectStatusUpdates();
+            
+            // Reset form data
+            formData = {
+                director: null,
+                preferredName: '',
+                marriageStatus: null,
+                partnerName: '',
+                insulinStatus: null,
+                medicationStatus: null,
+                medications: [],
+                glucoseFile: null,
+                enzymeFile: null
+            };
+            
+            // Reset UI
+            document.querySelectorAll('.option-card, .medication-chip').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+            document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
+            glucoseLabel.textContent = 'Blood Test';
+            enzymeLabel.textContent = 'Enzymes';
+            uploadGlucose.classList.remove('has-file');
+            uploadEnzyme.classList.remove('has-file');
+            familyNameSection.classList.remove('visible');
+            newJobBtn.classList.add('hidden');
+            jobDetails.classList.add('hidden');
+            jobDetailsGrid.innerHTML = '';
+            
+            // Reset buttons
+            document.querySelectorAll('.next-btn, #submit-btn').forEach(btn => btn.disabled = true);
+            submitBtn.textContent = 'Submit for Analysis';
+            
+            // Show start
+            jobStatusContainer.classList.add('hidden');
+            startCard.classList.remove('hidden');
+            startCard.style.opacity = '1';
+            startCard.style.transform = 'scale(1)';
+        });
+        
+        // Manual update function (for testing)
+        window.updateJobStatus = function(data) {
+            if (data.type === 'status_update') {
+                const prevTitle = statusTitle.textContent;
+                if (prevTitle) addToTimeline(prevTitle);
+                updateCurrentStatus(data.status === 'complete' ? 'complete' : 'processing', data.title, data.subtitle);
+            } else if (data.type === 'job_complete') {
+                const prevTitle = statusTitle.textContent;
+                if (prevTitle) addToTimeline(prevTitle);
+                updateCurrentStatus('complete', data.title, data.subtitle);
+                if (data.details) showJobDetails(data.details);
+            }
+        };
+    </script>
+</body>
+</html>
